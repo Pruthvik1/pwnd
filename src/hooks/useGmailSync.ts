@@ -7,7 +7,16 @@ export function useGmailSyncStatus() {
     queryKey: ["gmail-sync"],
     queryFn: async () => {
       const supabase = requireSupabase();
-      const { data, error } = await supabase.from("gmail_sync").select("*").single();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user?.id) return null;
+      // maybeSingle() returns null (not 406) when no row exists yet
+      const { data, error } = await supabase
+        .from("gmail_sync")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
       if (error) {
         throw error;
       }
@@ -35,8 +44,19 @@ export function useTriggerGmailSync() {
         throw new Error("No authenticated user available for Gmail sync.");
       }
 
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("No active session — please sign out and sign back in.");
+      }
+
       const { data, error } = await supabase.functions.invoke("gmail-sync", {
         body: { userId: user.id },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
       if (error) {
         throw error;

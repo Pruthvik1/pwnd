@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 import { Sparkline } from "@/components/charts/Sparkline";
 import { ScreenContainer } from "@/components/common/ScreenContainer";
@@ -96,24 +96,12 @@ export function DashboardScreen() {
   return (
     <ScreenContainer>
       <View style={styles.heroCard}>
-        <Text style={styles.heroCaption}>Available balance</Text>
+        <Text style={styles.heroCaption}>Total Earned</Text>
         <Text style={styles.heroAmount}>${data.totalEarned.toFixed(2)}</Text>
-        <View style={styles.heroActions}>
-          <Pressable style={[styles.heroButton, styles.heroPrimaryButton]}>
-            <Text style={styles.heroPrimaryLabel}>Send</Text>
-          </Pressable>
-          <Pressable style={styles.heroButton}>
-            <Text style={styles.heroSecondaryLabel}>Request</Text>
-          </Pressable>
-        </View>
       </View>
 
       <View style={styles.statsRow}>
-        <StatCard label="Total Earned" value={`$${data.totalEarned.toFixed(0)}`} />
         <StatCard label="Accepted" value={`${data.acceptedCount}`} />
-      </View>
-
-      <View style={styles.statsRow}>
         <StatCard label="Reports Sent" value={`${data.reportsSent}`} />
         <StatCard label="Pending Payout" value={`$${data.pendingPayout.toFixed(0)}`} />
       </View>
@@ -207,29 +195,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "800",
   },
-  heroActions: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 4,
-  },
-  heroButton: {
-    flex: 1,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.14)",
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  heroPrimaryButton: {
-    backgroundColor: "#f4c542",
-  },
-  heroPrimaryLabel: {
-    color: "#111827",
-    fontWeight: "700",
-  },
-  heroSecondaryLabel: {
-    color: theme.colors.white,
-    fontWeight: "700",
-  },
+
   statsRow: {
     flexDirection: "row",
     gap: 8,
