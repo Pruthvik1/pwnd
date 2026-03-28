@@ -59,13 +59,17 @@ export function FreelanceListScreen() {
             <Text style={styles.engagementTitle}>{engagement.title}</Text>
             <View style={styles.moneyRow}>
               <Text style={styles.moneyLabel}>Expected</Text>
-              <Text style={styles.moneyValue}>${Number(engagement.expected_value ?? 0).toFixed(2)}</Text>
+              <Text style={styles.moneyValue}>
+                ${Number(engagement.expected_value ?? 0).toFixed(2)}
+              </Text>
             </View>
           </Pressable>
         ))}
 
         {!engagements.length && !isLoading ? (
-          <Text style={styles.empty}>No freelance clients yet. Add your first lead to start pipeline tracking.</Text>
+          <Text style={styles.empty}>
+            No freelance clients yet. Add your first lead to start pipeline tracking.
+          </Text>
         ) : null}
       </View>
     </ScreenContainer>

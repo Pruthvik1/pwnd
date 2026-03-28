@@ -60,7 +60,9 @@ export function AddFreelanceScreen() {
           onChangeText={setExpectedValue}
         />
         <Pressable style={styles.saveButton} onPress={onSave} disabled={createEngagement.isPending}>
-          <Text style={styles.saveText}>{createEngagement.isPending ? "Saving..." : "Save lead"}</Text>
+          <Text style={styles.saveText}>
+            {createEngagement.isPending ? "Saving..." : "Save lead"}
+          </Text>
         </Pressable>
       </View>
     </ScreenContainer>

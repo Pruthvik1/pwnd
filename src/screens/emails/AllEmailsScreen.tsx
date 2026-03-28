@@ -41,7 +41,9 @@ export function AllEmailsScreen() {
     return Array.from(grouped.values())
       .map((threadEmails) => {
         const ordered = [...threadEmails].sort(
-          (a, b) => new Date(b.received_at ?? b.synced_at).getTime() - new Date(a.received_at ?? a.synced_at).getTime(),
+          (a, b) =>
+            new Date(b.received_at ?? b.synced_at).getTime() -
+            new Date(a.received_at ?? a.synced_at).getTime(),
         );
         const latest = ordered[0];
         return {
@@ -72,7 +74,9 @@ export function AllEmailsScreen() {
           onPress={() => triggerSync.mutate()}
           disabled={triggerSync.isPending}
         >
-          <Text style={styles.syncButtonText}>{triggerSync.isPending ? "Syncing..." : "Sync now"}</Text>
+          <Text style={styles.syncButtonText}>
+            {triggerSync.isPending ? "Syncing..." : "Sync now"}
+          </Text>
         </Pressable>
       </View>
 

@@ -28,7 +28,13 @@ export function Sparkline({ points, width = 180, height = 50, color = "#0070e0" 
 
   return (
     <Svg width={width} height={height}>
-      <Polyline points={coordinates} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" />
+      <Polyline
+        points={coordinates}
+        fill="none"
+        stroke={color}
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
     </Svg>
   );
 }

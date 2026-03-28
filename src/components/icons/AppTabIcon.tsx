@@ -42,7 +42,11 @@ export function AppTabIcon({ name, color, size = 20 }: AppTabIconProps) {
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
           <Rect x="3" y="7" width="18" height="13" rx="2" stroke={color} strokeWidth="2" />
-          <Path d="M8 7V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V7" stroke={color} strokeWidth="2" />
+          <Path
+            d="M8 7V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V7"
+            stroke={color}
+            strokeWidth="2"
+          />
         </Svg>
       );
     case "earnings":

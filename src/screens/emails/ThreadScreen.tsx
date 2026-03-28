@@ -39,10 +39,13 @@ export function ThreadScreen() {
         {threadMessages.map((message) => (
           <View
             key={message.id}
-            style={[styles.messageBubble, message.is_sent_by_me ? styles.sentBubble : styles.receivedBubble]}
+            style={[
+              styles.messageBubble,
+              message.is_sent_by_me ? styles.sentBubble : styles.receivedBubble,
+            ]}
           >
             <Text style={styles.messageMeta}>
-              {message.is_sent_by_me ? "You" : message.from_address ?? "Unknown"}
+              {message.is_sent_by_me ? "You" : (message.from_address ?? "Unknown")}
             </Text>
             <Text style={styles.messageText}>{message.body_preview ?? "No message preview"}</Text>
             <Text style={styles.messageTime}>
@@ -51,7 +54,9 @@ export function ThreadScreen() {
           </View>
         ))}
 
-        {!threadMessages.length ? <Text style={styles.empty}>No messages available for this thread.</Text> : null}
+        {!threadMessages.length ? (
+          <Text style={styles.empty}>No messages available for this thread.</Text>
+        ) : null}
       </View>
 
       <View style={styles.composerCard}>

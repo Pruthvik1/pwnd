@@ -123,7 +123,11 @@ export function DashboardScreen() {
           <Text style={styles.cardTitle}>6-Month Earnings Trend</Text>
           <Text style={styles.cardHint}>Live</Text>
         </View>
-        <Sparkline points={trendData.map((item) => item.value)} width={Math.max(width - 84, 160)} height={72} />
+        <Sparkline
+          points={trendData.map((item) => item.value)}
+          width={Math.max(width - 84, 160)}
+          height={72}
+        />
         <View style={styles.monthRow}>
           {trendData.map((item) => (
             <Text key={item.label} style={styles.monthLabel}>
@@ -153,7 +157,13 @@ export function DashboardScreen() {
           <View style={styles.activityList}>
             {activityTimeline.map((activity) => (
               <View key={activity.id} style={styles.activityItem}>
-                <View style={[styles.activityDot, activity.type === "email" && styles.emailDot, activity.type === "freelance" && styles.freelanceDot]} />
+                <View
+                  style={[
+                    styles.activityDot,
+                    activity.type === "email" && styles.emailDot,
+                    activity.type === "freelance" && styles.freelanceDot,
+                  ]}
+                />
                 <View style={styles.activityBody}>
                   <Text style={styles.activityTitle}>{activity.title}</Text>
                   <Text style={styles.activitySubtitle}>{activity.subtitle}</Text>

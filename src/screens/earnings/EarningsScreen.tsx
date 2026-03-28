@@ -82,7 +82,9 @@ export function EarningsScreen() {
           <View key={payout.id} style={styles.payoutRow}>
             <View>
               <Text style={styles.method}>{payout.payment_method}</Text>
-              <Text style={styles.date}>{payout.paid_at ? new Date(payout.paid_at).toLocaleDateString() : "Pending"}</Text>
+              <Text style={styles.date}>
+                {payout.paid_at ? new Date(payout.paid_at).toLocaleDateString() : "Pending"}
+              </Text>
             </View>
             <Text style={styles.amount}>
               {payout.currency} {Number(payout.amount).toFixed(2)}
@@ -90,7 +92,9 @@ export function EarningsScreen() {
           </View>
         ))}
 
-        {!data?.payouts?.length && !isLoading ? <Text style={styles.empty}>No payouts recorded yet.</Text> : null}
+        {!data?.payouts?.length && !isLoading ? (
+          <Text style={styles.empty}>No payouts recorded yet.</Text>
+        ) : null}
       </View>
     </ScreenContainer>
   );

@@ -25,7 +25,9 @@ export function BarChart({ data, color = theme.colors.primary }: BarChartProps) 
           <View style={styles.barItem} key={item.label}>
             <Text style={styles.barValue}>${item.value.toFixed(0)}</Text>
             <View style={styles.barTrack}>
-              <View style={[styles.barFill, { height: `${heightPercent}%`, backgroundColor: color }]} />
+              <View
+                style={[styles.barFill, { height: `${heightPercent}%`, backgroundColor: color }]}
+              />
             </View>
             <Text style={styles.barLabel}>{item.label}</Text>
           </View>
