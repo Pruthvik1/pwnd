@@ -13,9 +13,12 @@ function getTokensFromUrl(url: string) {
   const hashParams = new URLSearchParams(hash);
   const queryParams = new URLSearchParams(url.split("?")[1] ?? "");
 
+  const get = (key: string) => hashParams.get(key) ?? queryParams.get(key);
   return {
-    accessToken: hashParams.get("access_token") ?? queryParams.get("access_token"),
-    refreshToken: hashParams.get("refresh_token") ?? queryParams.get("refresh_token"),
+    accessToken: get("access_token"),
+    refreshToken: get("refresh_token"),
+    providerToken: get("provider_token"),
+    providerRefreshToken: get("provider_refresh_token"),
   };
 }
 
@@ -50,7 +53,9 @@ export async function signInWithGoogle() {
     throw new Error("Google sign-in was cancelled or failed.");
   }
 
-  const { accessToken, refreshToken } = getTokensFromUrl(result.url);
+  const { accessToken, refreshToken, providerToken, providerRefreshToken } = getTokensFromUrl(
+    result.url,
+  );
   if (!accessToken || !refreshToken) {
     throw new Error("Missing auth tokens in OAuth callback URL.");
   }
@@ -62,6 +67,28 @@ export async function signInWithGoogle() {
 
   if (sessionError) {
     throw sessionError;
+  }
+
+  // Store Google provider tokens in gmail_sync — extracted from callback URL
+  // (session.provider_token is not persisted by Supabase after setSession)
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+
+  // Use URL-extracted token first; fall back to what Supabase stored (usually null)
+  const googleToken = providerToken ?? sessionData.session?.provider_token ?? null;
+  const googleRefreshToken =
+    providerRefreshToken ?? sessionData.session?.provider_refresh_token ?? null;
+
+  if (userId && googleToken) {
+    await supabase.from("gmail_sync").upsert(
+      {
+        user_id: userId,
+        google_access_token: googleToken,
+        google_refresh_token: googleRefreshToken,
+        sync_status: "idle",
+      },
+      { onConflict: "user_id" },
+    );
   }
 }
 
@@ -84,33 +111,33 @@ export async function getCurrentSession() {
 
 export async function isOnboardingCompleted(userId: string) {
   const supabase = requireSupabase();
+  // maybeSingle() returns null when no row exists (instead of throwing 406)
   const { data, error } = await supabase
     .from("profiles")
     .select("onboarding_completed")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    if (error.code === "PGRST205") {
-      return false;
-    }
-    throw error;
+    console.error("Onboarding status check error:", error);
+    return false;
   }
 
-  return Boolean(data.onboarding_completed);
+  return Boolean(data?.onboarding_completed);
 }
 
 export async function completeOnboarding(userId: string) {
   const supabase = requireSupabase();
+  // upsert creates the row if no profile exists yet, update if it does
   const { error } = await supabase
     .from("profiles")
-    .update({ onboarding_completed: true })
-    .eq("id", userId);
+    .upsert({ id: userId, onboarding_completed: true }, { onConflict: "id" });
 
   if (error) {
-    if (error.code === "PGRST205") {
-      return;
-    }
     throw error;
   }
+
+  // Refresh session so the auth state change listener in AppNavigator
+  // fires and re-checks onboarding status
+  await supabase.auth.refreshSession();
 }

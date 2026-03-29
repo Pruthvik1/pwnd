@@ -17,6 +17,7 @@ import { AddBountyScreen } from "@/screens/bounties/AddBountyScreen";
 import { AllEmailsScreen } from "@/screens/emails/AllEmailsScreen";
 import { ThreadScreen } from "@/screens/emails/ThreadScreen";
 import { EarningsScreen } from "@/screens/earnings/EarningsScreen";
+import { ProfileScreen } from "@/screens/profile/ProfileScreen";
 import { FreelanceListScreen } from "@/screens/freelance/FreelanceListScreen";
 import { FreelanceDetailScreen } from "@/screens/freelance/FreelanceDetailScreen";
 import { AddFreelanceScreen } from "@/screens/freelance/AddFreelanceScreen";
@@ -149,6 +150,14 @@ function MainTabs() {
         options={{
           title: "Earnings",
           tabBarIcon: ({ color }) => <AppTabIcon name="earnings" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="ProfileTab"
+        component={ProfileScreen}
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => <AppTabIcon name="profile" color={color} />,
         }}
       />
     </Tabs.Navigator>

@@ -10,11 +10,17 @@ export function useBounties() {
     queryKey: key,
     queryFn: async () => {
       const supabase = requireSupabase();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user?.id) return [] as Bounty[];
       const { data, error } = await supabase
         .from("bounties")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) {
+        if (error.code === "42P01") return [] as Bounty[];
         throw error;
       }
       return (data ?? []) as Bounty[];
@@ -28,7 +34,15 @@ export function useCreateBounty() {
   return useMutation({
     mutationFn: async (payload: Partial<Bounty>) => {
       const supabase = requireSupabase();
-      const { data, error } = await supabase.from("bounties").insert(payload).select("*").single();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user?.id) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("bounties")
+        .insert({ ...payload, user_id: user.id })
+        .select("*")
+        .single();
       if (error) {
         throw error;
       }

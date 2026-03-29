@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { theme } from "@/constants/theme";
 
 export interface BarChartDatum {
+  key?: string;
   label: string;
   value: number;
 }
@@ -18,11 +19,11 @@ export function BarChart({ data, color = theme.colors.primary }: BarChartProps) 
 
   return (
     <View style={styles.container}>
-      {data.map((item) => {
+      {data.map((item, index) => {
         const heightPercent = (item.value / maxValue) * 100;
 
         return (
-          <View style={styles.barItem} key={item.label}>
+          <View style={styles.barItem} key={index}>
             <Text style={styles.barValue}>${item.value.toFixed(0)}</Text>
             <View style={styles.barTrack}>
               <View

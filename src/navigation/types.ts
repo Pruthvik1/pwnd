@@ -26,4 +26,5 @@ export type RootTabParamList = {
   EmailsTab: undefined;
   FreelanceTab: undefined;
   EarningsTab: undefined;
+  ProfileTab: undefined;
 };

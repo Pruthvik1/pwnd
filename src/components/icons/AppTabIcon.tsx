@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path, Rect } from "react-native-svg";
 
-type IconName = "dashboard" | "bounties" | "emails" | "freelance" | "earnings";
+type IconName = "dashboard" | "bounties" | "emails" | "freelance" | "earnings" | "profile";
 
 interface AppTabIconProps {
   name: IconName;
@@ -55,6 +55,22 @@ export function AppTabIcon({ name, color, size = 20 }: AppTabIconProps) {
           <Path d="M4 19H20" stroke={color} strokeWidth="2" strokeLinecap="round" />
           <Path d="M7 16L11 12L14 14L19 9" stroke={color} strokeWidth="2" strokeLinecap="round" />
           <Path d="M19 12V9H16" stroke={color} strokeWidth="2" strokeLinecap="round" />
+        </Svg>
+      );
+    case "profile":
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path
+            d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12Z"
+            stroke={color}
+            strokeWidth="2"
+          />
+          <Path
+            d="M4 20C4 17.33 7.58 15 12 15C16.42 15 20 17.33 20 20"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </Svg>
       );
     default:

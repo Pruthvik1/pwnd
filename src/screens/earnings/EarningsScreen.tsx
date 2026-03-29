@@ -12,6 +12,7 @@ export function EarningsScreen() {
   const monthlyData = React.useMemo(() => {
     const months = Array.from({ length: 6 }).map((_, index) => {
       const date = new Date();
+      date.setDate(1); // avoid day-overflow (e.g. Mar 29 → Feb 29 doesn't exist)
       date.setMonth(date.getMonth() - (5 - index));
       return {
         key: `${date.getFullYear()}-${date.getMonth()}`,
@@ -36,25 +37,41 @@ export function EarningsScreen() {
       totals.set(key, (totals.get(key) ?? 0) + Number(payout.amount ?? 0));
     });
 
-    return months.map((month) => ({ label: month.label, value: totals.get(month.key) ?? 0 }));
+    return months.map((month) => ({
+      key: month.key,
+      label: month.label,
+      value: totals.get(month.key) ?? 0,
+    }));
   }, [data?.payouts]);
 
-  const exportCsv = async () => {
+  const exportCsv = () => {
     const headers = ["paid_at", "amount", "currency", "payment_method", "notes"];
     const rows = (data?.payouts ?? []).map((payout) => [
       payout.paid_at ?? "",
-      payout.amount,
+      String(payout.amount),
       payout.currency,
-      payout.payment_method,
-      (payout.notes ?? "").replaceAll(",", " "),
+      payout.payment_method ?? "",
+      (payout.notes ?? "").replace(/,/g, " "),
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
 
-    await Share.share({
-      title: "BountyTrack payouts CSV",
-      message: csv,
-    });
+    // Web: trigger browser file download
+    if (typeof document !== "undefined") {
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bountytrack-payouts.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    // Native: use Share sheet
+    Share.share({ title: "BountyTrack payouts CSV", message: csv }).catch(() => {});
   };
 
   return (

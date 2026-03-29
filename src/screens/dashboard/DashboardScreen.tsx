@@ -23,6 +23,7 @@ export function DashboardScreen() {
   const trendData = React.useMemo(() => {
     const months = Array.from({ length: 6 }).map((_, index) => {
       const date = new Date();
+      date.setDate(1); // avoid day-overflow (e.g. Mar 29 → Feb 29 doesn't exist)
       date.setMonth(date.getMonth() - (5 - index));
       return {
         key: `${date.getFullYear()}-${date.getMonth()}`,
@@ -49,6 +50,7 @@ export function DashboardScreen() {
     });
 
     return months.map((month) => ({
+      key: month.key,
       label: month.label,
       value: buckets.get(month.key) ?? 0,
     }));
@@ -118,7 +120,7 @@ export function DashboardScreen() {
         />
         <View style={styles.monthRow}>
           {trendData.map((item) => (
-            <Text key={item.label} style={styles.monthLabel}>
+            <Text key={item.key} style={styles.monthLabel}>
               {item.label}
             </Text>
           ))}

@@ -53,7 +53,12 @@ export function useTriggerGmailSync() {
       }
 
       const { data, error } = await supabase.functions.invoke("gmail-sync", {
-        body: { userId: user.id },
+        body: {
+          userId: user.id,
+          // Pass current session's provider token so sync works without a re-login
+          providerToken: session.provider_token ?? undefined,
+          providerRefreshToken: session.provider_refresh_token ?? undefined,
+        },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
