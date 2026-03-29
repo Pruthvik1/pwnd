@@ -1,6 +1,6 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 
 import { ScreenContainer } from "@/components/common/ScreenContainer";
 import { theme } from "@/constants/theme";
@@ -68,6 +68,13 @@ export function AllEmailsScreen() {
         <View>
           <Text style={styles.syncLabel}>Gmail Sync</Text>
           <Text style={styles.syncStatus}>{syncState.toUpperCase()}</Text>
+          {triggerSync.isError ? (
+            <Text style={styles.syncError}>
+              {triggerSync.error instanceof Error
+                ? triggerSync.error.message
+                : "Gmail sync failed. Please try again."}
+            </Text>
+          ) : null}
         </View>
         <Pressable
           style={styles.syncButton}
@@ -160,6 +167,12 @@ const styles = StyleSheet.create({
     marginTop: 3,
     color: theme.colors.text,
     fontWeight: "800",
+  },
+  syncError: {
+    marginTop: 4,
+    color: theme.colors.danger,
+    fontSize: 12,
+    maxWidth: 220,
   },
   syncButton: {
     borderRadius: 999,

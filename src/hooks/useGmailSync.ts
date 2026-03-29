@@ -52,18 +52,30 @@ export function useTriggerGmailSync() {
         throw new Error("No active session — please sign out and sign back in.");
       }
 
+      // Refresh session to ensure auth token is fresh
+      const { data: refreshed } = await supabase.auth.refreshSession();
+      const currentSession = refreshed.session ?? session;
+
       const { data, error } = await supabase.functions.invoke("gmail-sync", {
         body: {
           userId: user.id,
           // Pass current session's provider token so sync works without a re-login
-          providerToken: session.provider_token ?? undefined,
-          providerRefreshToken: session.provider_refresh_token ?? undefined,
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          providerToken: currentSession?.provider_token ?? undefined,
+          providerRefreshToken: currentSession?.provider_refresh_token ?? undefined,
         },
       });
       if (error) {
+        const maybeHttpError = error as Error & { context?: Response };
+        if (maybeHttpError.context) {
+          const payload = await maybeHttpError.context.json().catch(() => ({}));
+
+          // Extract Gmail-specific error if present
+          const gmailError = payload?.gmail_error;
+          const detail =
+            gmailError?.message || payload?.detail || payload?.error || "Unknown error";
+
+          throw new Error(`Gmail sync failed (${maybeHttpError.context.status}): ${detail}`);
+        }
         throw error;
       }
       return data;

@@ -109,6 +109,8 @@ create table if not exists invoices (
 
 create table if not exists gmail_sync (
   user_id uuid references auth.users primary key,
+  google_access_token text,
+  google_refresh_token text,
   history_id text,
   last_synced_at timestamptz,
   sync_status text default 'idle'

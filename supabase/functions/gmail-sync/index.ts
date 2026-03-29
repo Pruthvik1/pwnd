@@ -37,7 +37,11 @@ async function gmailGet(path: string, token: string) {
   const res = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return { status: res.status, data: await res.json() };
+  const data = await res.json();
+  if (res.status !== 200) {
+    console.error(`[gmail-sync] Gmail API ${res.status}:`, data);
+  }
+  return { status: res.status, data };
 }
 
 Deno.serve(async (req) => {
@@ -120,7 +124,17 @@ Deno.serve(async (req) => {
 
     if (listRes.status !== 200) {
       await supabase.from("gmail_sync").update({ sync_status: "error" }).eq("user_id", body.userId);
-      return json({ error: "Gmail API error", detail: listRes.data }, 502);
+      const gmailError = listRes.data?.error;
+      const errorMsg = gmailError?.message || listRes.data?.message || JSON.stringify(listRes.data);
+      return json(
+        {
+          error: "Gmail API error",
+          status: listRes.status,
+          gmail_error: gmailError,
+          detail: errorMsg,
+        },
+        listRes.status,
+      );
     }
 
     const messageIds: string[] = (listRes.data.messages ?? []).map((m: { id: string }) => m.id);
